@@ -1,0 +1,15 @@
+{
+    "users": [{
+        "username": "jonsmith123",
+        "password": "smithy"
+    }, {
+        "username": "xanderNicholson",
+        "password": "imVeryGay"
+    }, {
+        "username": "jonsmith",
+        "password": "gggg"
+    }, {
+        "username": "username",
+        "password": "password"
+    }]
+}
