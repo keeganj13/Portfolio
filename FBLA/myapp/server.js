@@ -11,7 +11,7 @@ const app = express();
 const server = app.listen(port, listening);
 
 function listening() {
-
+    console.log(`Running on ${port}`)
 }
 
 app.use(express.static('login'));
