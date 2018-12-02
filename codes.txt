@@ -1,0 +1,16 @@
+Status Codes:
+
+    Positive = Successful
+        1: Successful
+
+    Negative = Unsuccessful
+        -1: Username or Password wasn't entered
+        -2: Incorrect Password
+        -3: Invalid User
+        -4: User Already Exists
+
+Attempt Codes:
+
+    Login: 1
+
+    Signup: 2

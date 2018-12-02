@@ -3,22 +3,18 @@ const fs = require('fs');
 
 // Constants
 const port = 3000;
-const json = require('./users.json');
-let users = json.users;
+const usersJSON = require('./users.json');
+let users = usersJSON.users;
 
 // App
 const app = express();
 const server = app.listen(port, listening);
 
 function listening() {
-    console.log(`Running on ${port}`)
+    console.log(`Running on http://127.0.0.1:${port}`)
 }
 
 app.use(express.static('login'));
-
-app.get('/all', (request, response) => {
-    response.send(users);
-});
 
 app.get('/login/:user/:pass?', checkLogin);
 
@@ -29,39 +25,39 @@ function checkLogin(request, response) {
     let reply;
     if (!username || !password) {
         reply = {
-            msg: "Username or password is missing.",
-            status: 'failed'
-        }
+            attempted: 1,
+            status: -1
+        };
     } else {
-        let usernameExists = false;
+        let userExists = false;
         let correctPassAndUser = false;
         for (let i = 0; i < users.length; i++) {
             let user = users[i];
             if (username === user.username) {
-                usernameExists = true;
+                userExists = true;
                 if (password === user.password) {
                     correctPassAndUser = true;
                 }
             }
         }
-        if (usernameExists && !correctPassAndUser) {
+        if (userExists && !correctPassAndUser) {
             reply = {
-                msg: 'The password you entered was incorrect',
-                status: 'failed'
-            }
-        } else if (!usernameExists && !correctPassAndUser) {
+                attempted: 1,
+                status: -2
+            };
+        } else if (!userExists && !correctPassAndUser) {
             reply = {
-                msg: 'That user does not exist',
-                status: 'failed'
-            }
-        } else if (usernameExists && correctPassAndUser) {
+                attempted: 1,
+                status: -3
+            };
+        } else if (userExists && correctPassAndUser) {
             reply = {
-                msg: 'You have successfully logged in',
-                status: 'success'
-            }
+                attempted: 1,
+                status: 1
+            };
         }
     }
-    response.send(reply)
+    response.send(reply);
 }
 
 app.get('/signup/:username/:password?', signUp);
@@ -74,9 +70,9 @@ function signUp(request, response) {
 
     if (!username || !password) {
         reply = {
-            msg: 'Please enter a username and a password',
-            status: 'failed'
-        }
+            attempted: 2,
+            status: -1
+        };
     } else {
         let usernameExists = false;
         for (let i = 0; i < users.length; i++) {
@@ -88,9 +84,9 @@ function signUp(request, response) {
 
         if (usernameExists) {
             reply = {
-                msg: 'That username alreade exists. Please log in.',
-                status: 'failed'
-            }
+                attempted: 2,
+                status: -4
+            };
         } else {
             let newUser = {
                 username: username,
@@ -99,17 +95,27 @@ function signUp(request, response) {
             users.push(newUser);
             let newUsers = {
                 users: users
-            }
+            };
             fs.writeFile('users.json', JSON.stringify(newUsers), finished);
 
             function finished(err) {
                 console.log('all set');
             }
             reply = {
-                msg: 'You have successfully signed up.',
-                status: 'success'
-            }
+                attempted: 2,
+                status: 1
+            };
         }
     }
     response.send(reply);
+}
+
+function generateKey(length) {
+    let symbols = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
+    let key = "";
+    for (let i = 0; i < length; i++) {
+        key += symbols[randomInt(symbols.length - 1)];
+    }
+    console.log(key);
+    return key;
 }
